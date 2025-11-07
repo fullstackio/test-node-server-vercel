@@ -1,0 +1,22 @@
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from Node REST API!" });
+});
+
+app.get("/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
+
+app.post("/echo", (req, res) => {
+  res.json({ youSent: req.body });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log(`URL: http://localhost:${PORT}`);
+});
