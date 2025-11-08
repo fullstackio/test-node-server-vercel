@@ -14,32 +14,42 @@ let currentPort = DEFAULT_PORT;
 
 const server = http.createServer(app);
 
-function startServer(port: number) {
-  connectDB()
-    .then(() => {
-      const s = server.listen(port, () => {
-        try {
-          console.log(
-            colors.yellow(`Server is running at `),
-            colors.bgGreen(`${PROTOCOL}://${HOST}:${port}`)
-          );
-        } catch (err) {
-          console.error("Internal Server Error from API Server", err);
-        }
+// If running on Vercel, export the app for serverless
+if (process.env.VERCEL) {
+  // Optionally, connect DB on first request (see previous solution)
+  module.exports = app;
+} else {
+  // Local/dev: run the dynamic port logic
+  function startServer(port: number) {
+    connectDB()
+      .then(() => {
+        const s = server.listen(port, () => {
+          try {
+            console.log(
+              colors.yellow(`Server is running at `),
+              colors.bgGreen(`${PROTOCOL}://${HOST}:${port}`)
+            );
+          } catch (err) {
+            console.error("Internal Server Error from API Server", err);
+          }
+        });
+        s.on("error", (err: any) => {
+          if (err.code === "EADDRINUSE") {
+            console.warn(
+              colors.red(`Port ${port} in use, trying next port...`)
+            );
+            startServer(port + 1);
+          } else {
+            console.error("Server error:", err);
+            process.exit(1);
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(colors.red(`Failed to connect database`), err.message);
       });
-      s.on("error", (err: any) => {
-        if (err.code === "EADDRINUSE") {
-          console.warn(colors.red(`Port ${port} in use, trying next port...`));
-          startServer(port + 1);
-        } else {
-          console.error("Server error:", err);
-          process.exit(1);
-        }
-      });
-    })
-    .catch((err) => {
-      console.log(colors.red(`Failed to connect database`), err.message);
-    });
+  }
+  startServer(currentPort);
 }
 
-startServer(currentPort);
+export default app;
