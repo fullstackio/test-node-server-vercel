@@ -5,7 +5,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.json({ message: "Hello from Node REST API!" });
+  res.json({ message: "Hello from Node REST API! for Vercel test deployment" });
 });
 
 app.get("/ping", (req, res) => {
