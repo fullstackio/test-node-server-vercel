@@ -1,19 +1,21 @@
-require("dotenv").config();
-const express = require("express");
+import dotenv from "dotenv";
+import express, { Request, Response } from "express";
+
+dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello from Node REST API! for Vercel test deployment" });
 });
 
-app.get("/ping", (req, res) => {
+app.get("/ping", (req: Request, res: Response) => {
   res.json({ message: "welcome to ping pong game" });
 });
 
-app.post("/echo", (req, res) => {
+app.post("/echo", (req: Request, res: Response) => {
   res.json({ youSent: req.body });
 });
 
